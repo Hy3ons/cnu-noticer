@@ -138,7 +138,7 @@ const AnnouncementView: React.FC<AnnouncementViewProps> = ({ onAnnouncementClick
                             description={
                                 <span style={{ fontSize: '12px', color: '#888' }}>
                                     <CalendarOutlined style={{ marginRight: '6px' }} />
-                                    {dayjs(item.created_at).format('YYYY-MM-DD')}
+                                    {dayjs(item.publish_date).format('YYYY-MM-DD')}
                                 </span>
                             }
                         />

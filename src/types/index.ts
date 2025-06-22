@@ -17,6 +17,7 @@ export interface Announcement {
   markdown_content: string;
   writer: string;
   created_at: string;
+  publish_date: string;
   category: number | null;
   original_url: string;
   images: AttachmentImage[];

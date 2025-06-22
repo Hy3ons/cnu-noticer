@@ -55,7 +55,7 @@ export async function GET(request: NextRequest) {
       LEFT JOIN notice_files nf ON n.id = nf.notice_id
       ${whereQuery}
       GROUP BY n.id
-      ORDER BY n.created_at DESC
+      ORDER BY n.publish_date DESC, n.id DESC
       LIMIT $${queryParams.length - 1}
       OFFSET $${queryParams.length}
     `;

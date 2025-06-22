@@ -22,6 +22,7 @@ export async function GET(request: NextRequest) {
         n.ai_summary_title,
         n.ai_summary_content,
         n.original_url,
+        n.publish_date,
         json_agg(DISTINCT jsonb_build_object('id', ni.id, 'url', ni.url)) FILTER (WHERE ni.id IS NOT NULL) AS images,
         json_agg(DISTINCT jsonb_build_object('id', nf.id, 'filename', nf.filename, 'url', nf.url)) FILTER (WHERE nf.id IS NOT NULL) AS files
       FROM notice n
@@ -29,7 +30,7 @@ export async function GET(request: NextRequest) {
       LEFT JOIN notice_files nf ON n.id = nf.notice_id
       WHERE n.is_notice = true AND n.ignore_flag = false
       GROUP BY n.id
-      ORDER BY n.created_at DESC
+      ORDER BY n.publish_date DESC, n.id DESC
       LIMIT $1 OFFSET $2;
     `;
 

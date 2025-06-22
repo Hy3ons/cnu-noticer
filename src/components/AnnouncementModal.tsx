@@ -47,7 +47,7 @@ const AnnouncementModal: React.FC<AnnouncementModalProps> = ({ announcement, isO
         <div style={{ marginBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
             <span style={{ marginRight: '16px' }}><strong>작성자:</strong> {announcement.writer}</span>
-            <span><strong>작성일:</strong> {dayjs(announcement.created_at).format('YYYY-MM-DD')}</span>
+            <span><strong>작성일:</strong> {dayjs(announcement.publish_date).format('YYYY-MM-DD')}</span>
           </div>
           {announcement.category != null && categoryMapping[announcement.category] && (
               <Tag color={categoryMapping[announcement.category].color}>
