@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Input, Checkbox, List, Spin, Tag } from 'antd';
 import { SearchOutlined, BellOutlined, CalendarOutlined, UserOutlined, PushpinOutlined } from '@ant-design/icons';
 import InfiniteScroll from 'react-infinite-scroll-component';
@@ -19,6 +19,7 @@ const AnnouncementView: React.FC<AnnouncementViewProps> = ({ onAnnouncementClick
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategories, setSelectedCategories] = useState<number[]>([]);
   const [debouncedSearchTerm] = useDebounce(searchTerm, 500);
+  const [isMobile, setIsMobile] = useState(false);
 
   const { 
     announcements, 
@@ -43,9 +44,26 @@ const AnnouncementView: React.FC<AnnouncementViewProps> = ({ onAnnouncementClick
       value: parseInt(key, 10) 
     })), []);
 
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
+    handleResize(); // 초기값 설정
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   return (
-    <div style={{ display: 'flex', width: '100%', maxWidth: '1300px', gap: '24px' }}>
-      <div style={{ flex: 3, background: '#fff', padding: '24px', borderRadius: '8px' }}>
+    <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'} gap-6 w-full max-w-[1300px]`}>
+      <div
+        style={{
+          background: '#fff',
+          padding: '24px',
+          borderRadius: '8px',
+          flexBasis: isMobile ? '100%' : '60%',
+          minWidth: 0
+        }}
+      >
         <div style={{ marginBottom: 24 }}>
           <Input
             placeholder="검색어를 입력하세요..."
@@ -103,7 +121,19 @@ const AnnouncementView: React.FC<AnnouncementViewProps> = ({ onAnnouncementClick
           )}
         </div>
       </div>
-      <div style={{ flex: 2, background: '#fff', padding: '24px', borderRadius: '8px', position: 'sticky', top: '88px' }}>
+      <div
+        style={{
+          background: '#fff',
+          padding: '24px',
+          borderRadius: '8px',
+          position: 'sticky',
+          top: '88px',
+          marginTop: isMobile ? 24 : 0,
+          flexBasis: isMobile ? '100%' : '40%',
+          marginLeft: isMobile ? 0 : 32,
+          minWidth: 0
+        }}
+      >
         <h2 style={{ display: 'flex', alignItems: 'center', marginBottom: '16px', fontSize: '18px', fontWeight: 'bold' }}>
           <PushpinOutlined style={{ marginRight: '8px', color: '#1890ff' }} />
           주요 공지
