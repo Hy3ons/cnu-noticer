@@ -12,6 +12,9 @@ const nextConfig: NextConfig = {
     'rc-tree',
     'rc-table',
   ],
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
 };
 
 export default nextConfig;

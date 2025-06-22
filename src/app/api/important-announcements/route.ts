@@ -2,17 +2,18 @@ import { NextResponse, NextRequest } from 'next/server';
 import pool from '@/lib/db';
 
 export async function GET(request: NextRequest) {
+  let client;
   try {
+    client = await pool.connect();
+
     const searchParams = request.nextUrl.searchParams;
     const page = parseInt(searchParams.get('page') || '1', 10);
     const limit = 15;
     const offset = (page - 1) * limit;
 
-    const client = await pool.connect();
-
     const query = `
-      SELECT 
-        n.id, 
+      SELECT
+        n.id,
         n.title,
         n.created_at,
         n.writer,
@@ -33,11 +34,14 @@ export async function GET(request: NextRequest) {
     `;
 
     const result = await client.query(query, [limit, offset]);
-    client.release();
 
     return NextResponse.json({ announcements: result.rows });
   } catch (error) {
     console.error('Error fetching important announcements:', error);
     return NextResponse.json({ message: 'Error fetching important announcements' }, { status: 500 });
+  } finally {
+    if (client) {
+      client.release();
+    }
   }
 } 
