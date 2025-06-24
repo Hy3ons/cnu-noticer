@@ -10,6 +10,7 @@ import AppHeader from '@/components/AppHeader';
 import AnnouncementView from '@/components/AnnouncementView';
 import AnnouncementModal from '@/components/AnnouncementModal';
 import AppFooter from '@/components/AppFooter';
+import { useReadStatus } from '@/hooks/useReadStatus';
 
 dayjs.locale('ko');
 
@@ -18,6 +19,7 @@ const { Content } = Layout;
 const Home: React.FC = () => {
   const [selectedAnnouncement, setSelectedAnnouncement] = useState<Announcement | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const { readStatuses, markAsRead } = useReadStatus();
 
   const showModal = (announcement: Announcement) => {
     setSelectedAnnouncement(announcement);
@@ -25,6 +27,9 @@ const Home: React.FC = () => {
   };
 
   const handleCancel = () => {
+    if (selectedAnnouncement) {
+      markAsRead(selectedAnnouncement.id);
+    }
     setIsModalVisible(false);
     setSelectedAnnouncement(null);
   };
@@ -33,7 +38,10 @@ const Home: React.FC = () => {
     <Layout style={{ minHeight: '100vh', backgroundColor: '#f5f5f5' }}>
       <AppHeader />
       <Content style={{ padding: '88px 24px 24px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <AnnouncementView onAnnouncementClick={showModal} />
+        <AnnouncementView
+          onAnnouncementClick={showModal}
+          readStatuses={readStatuses}
+        />
         <div style={{
           width: '100%',
           maxWidth: '1300px',

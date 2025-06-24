@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-import { Input, Checkbox, List, Spin, Tag } from 'antd';
-import { SearchOutlined, BellOutlined, CalendarOutlined, UserOutlined, PushpinOutlined } from '@ant-design/icons';
+import { Input, Checkbox, List, Spin, Tag, Image } from 'antd';
+import { SearchOutlined, BellOutlined, CalendarOutlined, PushpinOutlined } from '@ant-design/icons';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import dayjs from 'dayjs';
 import { useDebounce } from 'use-debounce';
@@ -10,16 +10,27 @@ import { useDebounce } from 'use-debounce';
 import { Announcement, categoryMapping } from '@/types';
 import { useAnnouncements } from '@/hooks/useAnnouncements';
 import { useImportantAnnouncements } from '@/hooks/useImportantAnnouncements';
+import { ReadStatusIndicator } from './ReadStatusIndicator';
 
 interface AnnouncementViewProps {
   onAnnouncementClick: (announcement: Announcement) => void;
+  readStatuses: { [key: string]: string };
 }
 
-const AnnouncementView: React.FC<AnnouncementViewProps> = ({ onAnnouncementClick }) => {
+const AnnouncementView: React.FC<AnnouncementViewProps> = ({ onAnnouncementClick, readStatuses }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategories, setSelectedCategories] = useState<number[]>([]);
   const [debouncedSearchTerm] = useDebounce(searchTerm, 500);
   const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
+    handleResize(); // 초기값 설정
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const { 
     announcements, 
@@ -43,15 +54,6 @@ const AnnouncementView: React.FC<AnnouncementViewProps> = ({ onAnnouncementClick
       label: name, 
       value: parseInt(key, 10) 
     })), []);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 640);
-    };
-    handleResize(); // 초기값 설정
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
 
   return (
     <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'} gap-6 w-full max-w-[1300px]`}>
@@ -110,8 +112,22 @@ const AnnouncementView: React.FC<AnnouncementViewProps> = ({ onAnnouncementClick
                     }
                   >
                     <List.Item.Meta
-                      avatar={<BellOutlined style={{ fontSize: '20px', color: '#1890ff', paddingTop: '4px' }}/>}
-                      title={<span style={{fontSize: '16px'}}>{item.ai_summary_title || item.title}</span>}
+                      avatar={<BellOutlined style={{ fontSize: '20px', color: '#1890ff', paddingTop: '4px' }}/>} 
+                      title={
+                        <>
+                          <span
+                            style={{
+                              fontSize: '16px',
+                              color: readStatuses[item.id] ? '#666' : '#222',
+                              transition: 'color 0.2s'
+                            }}
+                          >
+                            {item.ai_summary_title || item.title}
+                          </span>
+                          {' '}
+                          <ReadStatusIndicator announcementId={item.id} showTime={true} readStatuses={readStatuses} />
+                        </>
+                      }
                       description={item.ai_summary_content}
                     />
                   </List.Item>
@@ -150,7 +166,9 @@ const AnnouncementView: React.FC<AnnouncementViewProps> = ({ onAnnouncementClick
             <List
                 itemLayout="horizontal"
                 dataSource={noticeAnnouncements}
-                renderItem={(item: any) => (
+                renderItem={(item: any) => {
+                  const isRead = !!readStatuses[item.id];
+                  return (
                     <List.Item
                         key={item.id}
                         onClick={() => onAnnouncementClick(item)}
@@ -164,7 +182,25 @@ const AnnouncementView: React.FC<AnnouncementViewProps> = ({ onAnnouncementClick
                         }
                     >
                         <List.Item.Meta
-                            title={<a style={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.85)' }}>{item.ai_summary_title || item.title}</a>}
+                            title={
+                              <a style={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.85)' }}>
+                                {item.ai_summary_title || item.title}
+                                {isRead && (
+                                  <Image
+                                    src="/svgs/check-icon.svg"
+                                    alt="Read"
+                                    width={14}
+                                    height={14}
+                                    style={{
+                                      display: 'inline-block',
+                                      verticalAlign: 'middle',
+                                      marginLeft: '6px',
+                                      pointerEvents: 'none',
+                                    }}
+                                  />
+                                )}
+                              </a>
+                            }
                             description={
                                 <span style={{ fontSize: '12px', color: '#888' }}>
                                     <CalendarOutlined style={{ marginRight: '6px' }} />
@@ -173,7 +209,8 @@ const AnnouncementView: React.FC<AnnouncementViewProps> = ({ onAnnouncementClick
                             }
                         />
                     </List.Item>
-                )}
+                  );
+                }}
             />
           </InfiniteScroll>
         </div>
