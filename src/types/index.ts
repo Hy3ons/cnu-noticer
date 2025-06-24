@@ -29,4 +29,16 @@ export const categoryMapping: { [key: number]: { name: string; color: string } }
   1: { name: '교내', color: 'green' },
   2: { name: '사업단', color: 'orange' },
   3: { name: '학부News', color: 'purple' },
-}; 
+};
+
+export interface Schedule {
+  id: number;
+  title: string;
+  description: string;
+  begin: string;
+  end: string;
+  is_ignored: boolean;
+  notice_id: number;
+  created_at: string;
+  notice: Announcement | null;
+} 

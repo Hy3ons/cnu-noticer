@@ -1,0 +1,140 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { Schedule, Announcement } from '@/types';
+import { differenceInCalendarDays, format } from 'date-fns';
+import { Card, List, Spin, Tag, Typography } from 'antd';
+import { CalendarOutlined } from '@ant-design/icons';
+
+const { Text } = Typography;
+
+interface ScheduleViewProps {
+  onAnnouncementClick: (announcement: Announcement) => void;
+}
+
+const CountdownTimer: React.FC<{ endDate: string }> = ({ endDate }) => {
+  const calculateTimeLeft = () => {
+    const difference = +new Date(endDate) - +new Date();
+    if (difference > 0) {
+      return {
+        hours: Math.floor(difference / (1000 * 60 * 60)),
+        minutes: Math.floor((difference / 1000 / 60) % 60),
+        seconds: Math.floor((difference / 1000) % 60),
+      };
+    }
+    return null;
+  };
+
+  const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      const newTimeLeft = calculateTimeLeft();
+      if (newTimeLeft) {
+        setTimeLeft(newTimeLeft);
+      } else {
+        setTimeLeft(null);
+        clearInterval(timer);
+      }
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [endDate]);
+
+  if (!timeLeft) {
+    return <Tag color="red">마감</Tag>;
+  }
+
+  const pad = (num: number) => num.toString().padStart(2, '0');
+
+  return (
+    <Tag color="red">
+      {`${pad(timeLeft.hours)}:${pad(timeLeft.minutes)}:${pad(timeLeft.seconds)} 남음`}
+    </Tag>
+  );
+};
+
+const getDday = (endDate: string) => {
+  const today = new Date();
+  const end = new Date(endDate);
+  const diff = differenceInCalendarDays(end, today);
+
+  if (diff < 0) {
+    return <Tag color="red">마감</Tag>;
+  }
+  if (diff === 0) {
+    return <CountdownTimer endDate={endDate} />;
+  }
+  if (diff <= 7) {
+    return <Tag color="gold">D-{diff}</Tag>;
+  }
+  if (diff > 365) {
+    return <Tag>무기한</Tag>;
+  }
+  return <Tag color="green">D-{diff}</Tag>;
+};
+
+const ScheduleView: React.FC<ScheduleViewProps> = ({ onAnnouncementClick }) => {
+  const [schedules, setSchedules] = useState<Schedule[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchSchedules = async () => {
+      try {
+        const response = await fetch('/api/schedules');
+        const data: Schedule[] = await response.json();
+        const sortedData = data.sort(
+          (a, b) => new Date(a.end).getTime() - new Date(b.end).getTime()
+        );
+        setSchedules(sortedData);
+      } catch (error) {
+        console.error('Failed to fetch schedules:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSchedules();
+  }, []);
+
+  if (loading) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', padding: '24px' }}>
+        <Spin />
+      </div>
+    );
+  }
+
+  return (
+    <Card
+      title={
+        <h2 style={{ display: 'flex', alignItems: 'center', fontSize: '18px', fontWeight: 'bold', margin: 0 }}>
+          <CalendarOutlined style={{ marginRight: '8px', color: '#1890ff' }} />
+          주요 마감일정
+        </h2>
+      }
+      style={{ width: '100%', maxWidth: 1300, marginTop: 24 }}
+    >
+      <div id="scheduleScrollableDiv" className="custom-scrollbar" style={{ height: 400, overflow: 'auto' }}>
+        <List
+          itemLayout="horizontal"
+          dataSource={schedules}
+          renderItem={(item) => (
+            <List.Item
+              actions={[getDday(item.end)]}
+              onClick={() => item.notice && onAnnouncementClick(item.notice)}
+              style={{ cursor: item.notice ? 'pointer' : 'default' }}
+            >
+              <List.Item.Meta
+                title={item.title}
+                description={`${format(new Date(item.begin), 'yyyy.MM.dd')} ~ ${format(new Date(item.end), 'yyyy.MM.dd')}`}
+              />
+            </List.Item>
+          )}
+        />
+      </div>
+    </Card>
+  );
+};
+
+export default ScheduleView; 
