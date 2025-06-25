@@ -6,6 +6,9 @@ export async function POST(request: NextRequest) {
   if (!url) {
     return NextResponse.json({ message: 'URL이 필요합니다.' }, { status: 400 });
   }
+  if (!/^https?:\/\//.test(url)) {
+    return NextResponse.json({ message: 'URL은 http:// 또는 https://로 시작해야 합니다.' }, { status: 400 });
+  }
   let client;
   try {
     client = await pool.connect();
