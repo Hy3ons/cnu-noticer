@@ -113,7 +113,7 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({ onAnnouncementClick }) => {
           주요 마감일정
         </h2>
       }
-      style={{ width: '100%', maxWidth: 1300, marginTop: 24 }}
+      style={{ width: '100%', maxWidth: 1300, marginTop: 24, boxShadow: '0 2px 8px rgba(0,0,0,0.06)', borderRadius: 8 }}
     >
       <div id="scheduleScrollableDiv" className="custom-scrollbar" style={{ height: 400, overflow: 'auto' }}>
         <List

@@ -62,6 +62,7 @@ const AnnouncementView: React.FC<AnnouncementViewProps> = ({ onAnnouncementClick
           background: '#fff',
           padding: '24px',
           borderRadius: '8px',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
           flexBasis: isMobile ? '100%' : '60%',
           minWidth: 0
         }}
@@ -142,6 +143,7 @@ const AnnouncementView: React.FC<AnnouncementViewProps> = ({ onAnnouncementClick
           background: '#fff',
           padding: '24px',
           borderRadius: '8px',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
           position: 'sticky',
           top: '88px',
           marginTop: isMobile ? 24 : 0,
