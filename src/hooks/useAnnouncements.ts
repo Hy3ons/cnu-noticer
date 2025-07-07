@@ -19,7 +19,11 @@ export const useAnnouncements = (debouncedSearchTerm: string, selectedCategories
       }
       const data = await response.json();
       
-      const newAnnouncements = data.announcements || [];
+      const newAnnouncements = (data.announcements || []).map((item: any) => ({
+        ...item,
+        images: item.notice_images ?? [],
+        files: item.notice_files ?? [],
+      }));
 
       setAnnouncements(prev => (pageNum === 1 ? newAnnouncements : [...prev, ...newAnnouncements]));
       setHasMore(data.has_more);

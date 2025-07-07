@@ -13,7 +13,11 @@ export const useImportantAnnouncements = () => {
         throw new Error('Network response was not ok');
       }
       const data = await response.json();
-      const newNotices = data.announcements || [];
+      const newNotices = (data.announcements || []).map((item: any) => ({
+        ...item,
+        images: item.notice_images ?? [],
+        files: item.notice_files ?? [],
+      }));
       
       setAnnouncements(prev => (pageNum === 1 ? newNotices : [...prev, ...newNotices]));
       setHasMore(newNotices.length > 0);
