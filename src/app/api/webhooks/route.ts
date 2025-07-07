@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import pool from '@/lib/db';
+import { supabase } from '@/lib/db';
 
 export async function POST(request: NextRequest) {
   const { url } = await request.json();
@@ -9,15 +9,15 @@ export async function POST(request: NextRequest) {
   if (!/^https?:\/\//.test(url)) {
     return NextResponse.json({ message: 'URL은 http:// 또는 https://로 시작해야 합니다.' }, { status: 400 });
   }
-  let client;
-  try {
-    client = await pool.connect();
-    await client.query('INSERT INTO webhooks (url, is_active) VALUES ($1, $2)', [url, true]);
-    return NextResponse.json({ message: '저장되었습니다.' });
-  } catch (error) {
+
+  const { error } = await supabase
+    .from('webhooks')
+    .insert([{ url, is_active: true }]);
+
+  if (error) {
     console.error('Webhook 저장 오류:', error);
     return NextResponse.json({ message: '저장에 실패했습니다.' }, { status: 500 });
-  } finally {
-    if (client) client.release();
   }
+
+  return NextResponse.json({ message: '저장되었습니다.' });
 } 

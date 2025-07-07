@@ -1,48 +1,49 @@
-import { NextResponse, NextRequest } from 'next/server';
-import pool from '@/lib/db';
+import { NextRequest, NextResponse } from 'next/server';
+import { supabase } from '@/lib/db';
 
 export async function GET(request: NextRequest) {
-  let client;
-  try {
-    client = await pool.connect();
+  const searchParams = request.nextUrl.searchParams;
+  const page = parseInt(searchParams.get('page') || '1', 10);
+  const limit = parseInt(searchParams.get('limit') || '15', 10);
+  const offset = (page - 1) * limit;
 
-    const searchParams = request.nextUrl.searchParams;
-    const page = parseInt(searchParams.get('page') || '1', 10);
-    const limit = 15;
-    const offset = (page - 1) * limit;
+  const { data, count, error } = await supabase
+    .from('notice')
+    .select(`
+      id,
+      title,
+      created_at,
+      writer,
+      category,
+      markdown_content,
+      ai_summary_title,
+      ai_summary_content,
+      original_url,
+      publish_date,
+      notice_images:notice_images!notice_images_notice_id_fkey(id,url,notice_id),
+      notice_files:notice_files!notice_files_notice_id_fkey(id,filename,url,notice_id)
+    `, { count: 'exact' })
+    .eq('is_notice', true)
+    .eq('ignore_flag', false)
+    .order('publish_date', { ascending: false })
+    .range(offset, offset + limit - 1);
 
-    const query = `
-      SELECT
-        n.id,
-        n.title,
-        n.created_at,
-        n.writer,
-        n.category,
-        n.markdown_content,
-        n.ai_summary_title,
-        n.ai_summary_content,
-        n.original_url,
-        n.publish_date,
-        json_agg(DISTINCT jsonb_build_object('id', ni.id, 'url', ni.url)) FILTER (WHERE ni.id IS NOT NULL) AS images,
-        json_agg(DISTINCT jsonb_build_object('id', nf.id, 'filename', nf.filename, 'url', nf.url)) FILTER (WHERE nf.id IS NOT NULL) AS files
-      FROM notice n
-      LEFT JOIN notice_images ni ON n.id = ni.notice_id
-      LEFT JOIN notice_files nf ON n.id = nf.notice_id
-      WHERE n.is_notice = true AND n.ignore_flag = false
-      GROUP BY n.id
-      ORDER BY n.publish_date DESC, n.id DESC
-      LIMIT $1 OFFSET $2;
-    `;
-
-    const result = await client.query(query, [limit, offset]);
-
-    return NextResponse.json({ announcements: result.rows });
-  } catch (error) {
+  if (error) {
+    // Supabase 416 에러(범위 초과)는 빈 배열 반환
+    if (error.code === 'PGRST103') {
+      return NextResponse.json({
+        announcements: [],
+        total: count ?? 0,
+        has_more: false,
+      });
+    }
     console.error('Error fetching important announcements:', error);
     return NextResponse.json({ message: 'Error fetching important announcements' }, { status: 500 });
-  } finally {
-    if (client) {
-      client.release();
-    }
   }
+
+  return NextResponse.json({
+    announcements: data,
+    total: count,
+    has_more: (offset + (data?.length || 0)) < (count || 0),
+  });
 } 
