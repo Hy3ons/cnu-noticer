@@ -104,7 +104,7 @@ const AnnouncementModal: React.FC<AnnouncementModalProps> = ({ announcement, isO
                       image.id && <Image
                         key={image.id}
                         width={150}
-                        src={image.url}
+                        src={`/api/image-proxy?url=${encodeURIComponent(image.url)}`}
                         alt="첨부 이미지"
                         style={{ marginRight: '10px', marginBottom: '10px' }}
                       />
