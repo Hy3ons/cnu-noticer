@@ -33,31 +33,18 @@ export async function GET(request: NextRequest) {
   }
 
   const schedules = data.map(row => {
-    const {
-      notice_id_alias, notice_title, notice_created_at, notice_writer,
-      notice_category, notice_markdown_content, notice_ai_summary_title,
-      notice_ai_summary_content, notice_original_url, notice_publish_date,
-      images, files, ...scheduleData
-    } = row;
-
-    const notice: Announcement | null = notice_id_alias ? {
-      id: notice_id_alias,
-      title: notice_title,
-      ai_summary_title: notice_ai_summary_title,
-      ai_summary_content: notice_ai_summary_content,
-      markdown_content: notice_markdown_content,
-      writer: notice_writer,
-      created_at: notice_created_at,
-      publish_date: notice_publish_date,
-      category: notice_category,
-      original_url: notice_original_url,
-      images: images && images[0] !== null ? images : [],
-      files: files && files[0] !== null ? files : [],
-    } : null;
-
+    const { notice, ...scheduleData } = row;
+    let mappedNotice: Announcement | null = null;
+    if (notice) {
+      mappedNotice = {
+        ...notice,
+        images: notice.notice_images && notice.notice_images[0] !== null ? notice.notice_images : [],
+        files: notice.notice_files && notice.notice_files[0] !== null ? notice.notice_files : [],
+      };
+    }
     return {
       ...scheduleData,
-      notice
+      notice: mappedNotice,
     };
   });
 

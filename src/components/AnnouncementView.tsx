@@ -120,8 +120,12 @@ const AnnouncementView: React.FC<AnnouncementViewProps> = ({ onAnnouncementClick
                             style={{
                               fontSize: '16px',
                               color: readStatuses[item.id] ? '#666' : '#222',
-                              transition: 'color 0.2s'
+                              transition: 'color 0.2s',
+                              textDecoration: 'none',
+                              cursor: 'pointer',
                             }}
+                            onMouseOver={e => (e.currentTarget.style.textDecoration = 'underline')}
+                            onMouseOut={e => (e.currentTarget.style.textDecoration = 'none')}
                           >
                             {item.ai_summary_title || item.title}
                           </span>
@@ -129,7 +133,20 @@ const AnnouncementView: React.FC<AnnouncementViewProps> = ({ onAnnouncementClick
                           <ReadStatusIndicator announcementId={item.id} showTime={true} readStatuses={readStatuses} />
                         </>
                       }
-                      description={item.ai_summary_content}
+                      description={
+                        <span
+                          style={{
+                            fontSize: '12px',
+                            color: '#888',
+                            textDecoration: 'none',
+                            cursor: 'pointer',
+                          }}
+                          onMouseOver={e => (e.currentTarget.style.textDecoration = 'underline')}
+                          onMouseOut={e => (e.currentTarget.style.textDecoration = 'none')}
+                        >
+                          {item.ai_summary_content}
+                        </span>
+                      }
                     />
                   </List.Item>
                 )}
@@ -185,7 +202,16 @@ const AnnouncementView: React.FC<AnnouncementViewProps> = ({ onAnnouncementClick
                     >
                         <List.Item.Meta
                             title={
-                              <a style={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.85)' }}>
+                              <a
+                                style={{
+                                  fontSize: '14px',
+                                  color: 'rgba(0, 0, 0, 0.85)',
+                                  textDecoration: 'none',
+                                  cursor: 'pointer',
+                                }}
+                                onMouseOver={e => (e.currentTarget.style.textDecoration = 'underline')}
+                                onMouseOut={e => (e.currentTarget.style.textDecoration = 'none')}
+                              >
                                 {item.ai_summary_title || item.title}
                                 {isRead && (
                                   <Image
@@ -204,7 +230,11 @@ const AnnouncementView: React.FC<AnnouncementViewProps> = ({ onAnnouncementClick
                               </a>
                             }
                             description={
-                                <span style={{ fontSize: '12px', color: '#888' }}>
+                                <span
+                                  style={{ fontSize: '12px', color: '#888', textDecoration: 'none', cursor: 'pointer' }}
+                                  onMouseOver={e => (e.currentTarget.style.textDecoration = 'underline')}
+                                  onMouseOut={e => (e.currentTarget.style.textDecoration = 'none')}
+                                >
                                     <CalendarOutlined style={{ marginRight: '6px' }} />
                                     {dayjs(item.publish_date).format('YYYY-MM-DD')}
                                 </span>

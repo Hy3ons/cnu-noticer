@@ -126,7 +126,20 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({ onAnnouncementClick }) => {
               style={{ cursor: item.notice ? 'pointer' : 'default' }}
             >
               <List.Item.Meta
-                title={item.title}
+                title={
+                  <span
+                    style={{
+                      fontSize: '15px',
+                      color: '#222',
+                      textDecoration: 'none',
+                      cursor: item.notice ? 'pointer' : 'default',
+                    }}
+                    onMouseOver={e => (e.currentTarget.style.textDecoration = 'underline')}
+                    onMouseOut={e => (e.currentTarget.style.textDecoration = 'none')}
+                  >
+                    {item.title}
+                  </span>
+                }
                 description={`${format(new Date(item.begin), 'yyyy.MM.dd')} ~ ${format(new Date(item.end), 'yyyy.MM.dd')}`}
               />
             </List.Item>
