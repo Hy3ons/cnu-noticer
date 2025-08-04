@@ -3,17 +3,34 @@
 import { Card, Spin, Empty, Alert } from 'antd';
 import { Column } from '@ant-design/charts';
 import { useAnnouncementStats } from '@/hooks/useAnnouncementStats';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const DailyStatsChart: React.FC = () => {
   const { stats, isLoading, error } = useAnnouncementStats();
   const chartRef = useRef<any>(null);
+  const [windowWidth, setWindowWidth] = useState<number>(0);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+
+    setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   useEffect(() => {
     if (chartRef.current && stats.length > 0) {
       chartRef.current.update();
     }
   }, [stats]);
+
+  const displayStats = windowWidth <= 850 ? stats.slice(-10) : 
+                      windowWidth <= 1100 ? stats.slice(-20) : stats;
 
   if (isLoading) {
     return (
@@ -71,7 +88,7 @@ const DailyStatsChart: React.FC = () => {
   }
 
   const config = {
-    data : stats,
+    data: displayStats,
     xField: 'dateLabel',
     yField: 'count',
     axis: {
