@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@ant-design/charts": "^2.6.1",
     "@ant-design/compatible": "^5.1.4",
     "@ant-design/cssinjs": "^1.23.0",
     "@supabase/supabase-js": "^2.50.3",

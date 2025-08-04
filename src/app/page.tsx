@@ -13,6 +13,7 @@ import AppFooter from '@/components/AppFooter';
 import { useReadStatus } from '@/hooks/useReadStatus';
 import ScheduleView from '@/components/ScheduleView';
 import DiscordWebhookInput from '@/components/DiscordWebhookInput';
+import DailyStatsChart from '@/components/DailyStatsChart';
 
 dayjs.locale('ko');
 
@@ -45,6 +46,7 @@ const Home: React.FC = () => {
           readStatuses={readStatuses}
         />
         <ScheduleView onAnnouncementClick={showModal} />
+        <DailyStatsChart />
         <DiscordWebhookInput />
         <div style={{
           width: '100%',
