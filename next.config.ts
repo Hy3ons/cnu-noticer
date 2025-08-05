@@ -2,7 +2,6 @@ import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   experimental: {
-    optimizeCss: true,
     optimizePackageImports: ['antd', '@ant-design/icons'],
   },
   images: {
