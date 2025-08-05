@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Layout } from 'antd';
 import dayjs from 'dayjs';
 import 'dayjs/locale/ko';
@@ -19,23 +19,23 @@ dayjs.locale('ko');
 
 const { Content } = Layout;
 
-const Home: React.FC = () => {
+const Home: React.FC = React.memo(() => {
   const [selectedAnnouncement, setSelectedAnnouncement] = useState<Announcement | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const { readStatuses, markAsRead } = useReadStatus();
 
-  const showModal = (announcement: Announcement) => {
+  const showModal = useCallback((announcement: Announcement) => {
     setSelectedAnnouncement(announcement);
     setIsModalVisible(true);
-  };
+  }, []);
 
-  const handleCancel = () => {
+  const handleCancel = useCallback(() => {
     if (selectedAnnouncement) {
       markAsRead(selectedAnnouncement.id);
     }
     setIsModalVisible(false);
     setSelectedAnnouncement(null);
-  };
+  }, [selectedAnnouncement, markAsRead]);
 
   return (
     <Layout style={{ minHeight: '100vh', backgroundColor: '#f5f5f5' }}>
@@ -73,6 +73,8 @@ const Home: React.FC = () => {
       />
     </Layout>
   );
-};
+});
+
+Home.displayName = 'Home';
 
 export default Home;

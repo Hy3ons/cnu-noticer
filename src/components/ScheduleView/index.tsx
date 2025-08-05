@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Schedule, Announcement } from '@/types';
 import { differenceInCalendarDays, format } from 'date-fns';
-import { Card, List, Spin, Tag, Typography } from 'antd';
+import { Card, List, Spin, Tag, Typography, Skeleton } from 'antd';
 import { CalendarOutlined } from '@ant-design/icons';
 
 const { Text } = Typography;
@@ -97,14 +97,6 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({ onAnnouncementClick }) => {
     fetchSchedules();
   }, []);
 
-  if (loading) {
-    return (
-      <div style={{ display: 'flex', justifyContent: 'center', padding: '24px' }}>
-        <Spin />
-      </div>
-    );
-  }
-
   return (
     <Card
       title={
@@ -116,35 +108,63 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({ onAnnouncementClick }) => {
       style={{ width: '100%', maxWidth: 1300, marginTop: 24, boxShadow: '0 2px 8px rgba(0,0,0,0.06)', borderRadius: 8 }}
     >
       <div id="scheduleScrollableDiv" className="custom-scrollbar" style={{ height: 400, overflow: 'auto' }}>
-        <List
-          itemLayout="horizontal"
-          dataSource={schedules}
-          renderItem={(item) => (
-            <List.Item
-              actions={[getDday(item.end)]}
-              onClick={() => item.notice && onAnnouncementClick(item.notice)}
-              style={{ cursor: item.notice ? 'pointer' : 'default' }}
-            >
-              <List.Item.Meta
-                title={
-                  <span
-                    style={{
-                      fontSize: '15px',
-                      color: '#222',
-                      textDecoration: 'none',
-                      cursor: item.notice ? 'pointer' : 'default',
-                    }}
-                    onMouseOver={e => (e.currentTarget.style.textDecoration = 'underline')}
-                    onMouseOut={e => (e.currentTarget.style.textDecoration = 'none')}
-                  >
-                    {item.title}
-                  </span>
-                }
-                description={`${format(new Date(item.begin), 'yyyy.MM.dd')} ~ ${format(new Date(item.end), 'yyyy.MM.dd')}`}
-              />
-            </List.Item>
-          )}
-        />
+        {loading ? (
+          <List
+            itemLayout="horizontal"
+            dataSource={[1, 2, 3, 4, 5, 6, 7, 8, 9]}
+            style={{ padding: 0}}
+            renderItem={(index) => (
+              <List.Item
+                style={{ padding: '16px 12px' ,}}
+                actions={[<Skeleton.Button key="action" active size="small" style={{ width: 100, height: 24 }} />]}
+              >
+                <List.Item.Meta
+                  title={
+                    <div style={{ height: 24 }}>
+                      <Skeleton active paragraph={{ rows: 0 }} title={{ width: '50%' }} />
+                    </div>
+                  }
+                  description={
+                    <div style={{ height: 20 }}>
+                      <Skeleton active paragraph={{ rows: 0 }} title={{ width: '60%' }} />
+                    </div>
+                  }
+                />
+              </List.Item>
+            )}
+          />
+        ) : (
+          <List
+            itemLayout="horizontal"
+            dataSource={schedules}
+            style={{ padding: 0 }}
+            renderItem={(item) => (
+              <List.Item
+                style={{ padding: '12px 16px', cursor: item.notice ? 'pointer' : 'default' }}
+                actions={[getDday(item.end)]}
+                onClick={() => item.notice && onAnnouncementClick(item.notice)}
+              >
+                <List.Item.Meta
+                  title={
+                    <span
+                      style={{
+                        fontSize: '15px',
+                        color: '#222',
+                        textDecoration: 'none',
+                        cursor: item.notice ? 'pointer' : 'default',
+                      }}
+                      onMouseOver={e => (e.currentTarget.style.textDecoration = 'underline')}
+                      onMouseOut={e => (e.currentTarget.style.textDecoration = 'none')}
+                    >
+                      {item.title}
+                    </span>
+                  }
+                  description={`${format(new Date(item.begin), 'yyyy.MM.dd')} ~ ${format(new Date(item.end), 'yyyy.MM.dd')}`}
+                />
+              </List.Item>
+            )}
+          />
+        )}
       </div>
     </Card>
   );

@@ -106,3 +106,121 @@ a {
     text-wrap: balance;
   }
 }
+
+/* 성능 최적화를 위한 CSS */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* GPU 가속 활성화 */
+  transform: translateZ(0);
+  will-change: auto;
+}
+
+/* 스크롤바 최적화 */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #d1d5db transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #d1d5db;
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: #9ca3af;
+}
+
+/* 애니메이션 최적화 */
+.skeleton-animation {
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+  will-change: opacity;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.6;
+  }
+}
+
+/* 호버 효과 최적화 */
+.hover-underline {
+  transition: text-decoration 0.2s ease;
+  will-change: text-decoration;
+}
+
+/* 이미지 최적화 */
+img {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+}
+
+/* 리스트 아이템 최적화 */
+.list-item-optimized {
+  contain: layout style paint;
+  will-change: auto;
+}
+
+/* 모달 최적화 */
+.modal-optimized {
+  contain: layout style paint;
+  will-change: transform, opacity;
+}
+
+/* 무한 스크롤 최적화 */
+.infinite-scroll-container {
+  contain: layout style;
+  will-change: scroll-position;
+}
+
+/* 반응형 최적화 */
+@media (max-width: 640px) {
+  .mobile-optimized {
+    contain: layout style paint;
+  }
+}
+
+/* 폰트 최적화 */
+.font-optimized {
+  font-display: swap;
+  font-feature-settings: 'liga' 1, 'kern' 1;
+}
+
+/* 레이아웃 최적화 */
+.layout-optimized {
+  contain: layout style;
+  will-change: auto;
+}
+
+/* 스켈레톤 로딩 최적화 */
+.skeleton-optimized {
+  contain: layout style paint;
+  will-change: opacity;
+  transform: translateZ(0);
+}
