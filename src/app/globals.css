@@ -224,3 +224,10 @@ img {
   will-change: opacity;
   transform: translateZ(0);
 }
+
+/* Ant Design 이미지 프리뷰 (모달창 첨부 이미지 클릭시) 최적화 */
+.ant-image-preview-img {
+  max-width: 75vw !important;
+  max-height: 75vh !important;
+  object-fit: contain;
+}
